@@ -1,8 +1,3 @@
-/*
- * Part of this program is from the ProbablePair.cpp program from RNAstructure,
- * which was originally developed by Jessica S Reuter from Mathews lab.
- */
-
 #include "CSSR.h"
 #include "PDBParser.h"
 #include "cssr_struct.h"
@@ -13,7 +8,7 @@
 CSSR::CSSR() {
 
 	// Initialize the calculation type description.
-	calcType = "Coarse-grain Secondary Structure assignment of Rna structures";
+	calcType = "Calculation of probable structures by Thermodynamics parameters";
 
 	// Initialize the nucleic acid type.
 	isRNA = true;
@@ -63,7 +58,7 @@ bool CSSR::parse( int argc, char** argv ) {
 	vector<string> fastOptions;
 	fastOptions.push_back( "-f" );
 	fastOptions.push_back( "--fast" );
-	parser->addOptionFlagsWithParameters( fastOptions, "Specify fast level: 0 - (slow) always use thermodynamics parameters; 1 - (default) use thermodyanmics when length<500; 2 - (fast) always use thermodyanmics." );
+	parser->addOptionFlagsWithParameters( fastOptions, "Specify fast level: 0 - (slow) use thermodynamics parameters; 1 - (default) do not use thermodyanmics parameters." );
 
 	// Add the outfmt option.
 	vector<string> outfmtOptions;
@@ -148,33 +143,24 @@ void CSSR::run() {
             if (pdb_entry.chains[c].residues[r].het==false)
                 sequence+=toupper(aa3to1(pdb_entry.chains[c].residues[r].resn,convertX));
 
-	// Create a variable to handle errors.
-	int error = 0;
-
-	/*
-	 * Use the constructor for RNA that specifies a filename.
-	 * If the input file is a pfs file, specify type = 3 (pfs file).
-	 * If the input file is a sequence file, specify type = 2 (sequence file).
-	 * If the input file is a sequence (not a file), specify type = 0 or SEQUENCE_STRING.
-	 *
-	 * After construction of the strand, create the error checker which monitors the strand for errors.
-	 * Then, check for errors with the isErrorStatus function, which returns 0 if no error occurs.
-	 * Throughout, the calculation proceeds as long as error = 0.
-	 */
-	//cout << "Initializing nucleic acids..." << flush;
-	//int type = 2;//( !isSequence ) ? 3 : 2;
-	//RNA* strand = new RNA( input.c_str(), type, isRNA );
-	RNA* strand = new RNA( sequence.c_str(), SEQUENCE_STRING, isRNA );
-	ErrorChecker<RNA>* checker = new ErrorChecker<RNA>( strand );
-	error = checker->isErrorStatus();
-	//if( error == 0 ) { cout << "done." << endl; }
+    // ProbablePairRR
     vector<pair<float,pair<int,int> > >RR_list;
-
-    if (fastOpt==0 || (fastOpt==1 && sequence.size()<500))
+    if (fastOpt==0)
     {
+	    // Create a variable to handle errors.
+	    int error = 0;
+
+	    /* Use the constructor for RNA that specifies a filename.
+         * If the input file is a sequence file, specify type = 2 (sequence file).
+         * If the input file is a sequence (not a file), specify type = 0 or SEQUENCE_STRING.
+	     */
+	    RNA* strand = new RNA( sequence.c_str(), SEQUENCE_STRING, isRNA );
+	    ErrorChecker<RNA>* checker = new ErrorChecker<RNA>( strand );
+	    error = checker->isErrorStatus();
+
         if( error == 0)
         {
-		    int partError = strand->PartitionFunction();
+            int partError = strand->PartitionFunction();
             error = checker->isErrorStatus( partError );
         } 
 	    if( error == 0 )
@@ -182,6 +168,9 @@ void CSSR::run() {
             int mainCalcError = strand->PredictProbablePairsRR(RR_list, threshold);
             error = checker->isErrorStatus( mainCalcError );
         }
+	    delete checker;
+	    delete strand;
+	    if (error) cerr << calcType << " complete with errors." << endl; 
     }
     
     // assign SS solely by structure
@@ -280,16 +269,11 @@ void CSSR::run() {
     if (!usestdout) fp.close();
 
 	/* clean up */
-	delete checker;
-	delete strand;
     vector<pair<float,pair<int,int> > >().swap(RR_list);
     vector<size_t>().swap(filtered_bp_vec);
     vector<string>().swap(res_str_vec);
     vector<pair<float,vector<string> > >().swap(bp_vec);
     vector<ChainUnit>().swap(pdb_entry.chains);
-
-	// Print confirmation of run finishing.
-	if (error) cerr << calcType << " complete with errors." << endl; 
 }
 
 ///////////////////////////////////////////////////////////////////////////////
