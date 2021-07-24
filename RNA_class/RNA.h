@@ -18,15 +18,9 @@
 #include "../src/phmm/utils/xmath/log/xlog_math.h"
 
 
-#ifndef PARTITION_CORE
-	#include "RsampleData.h"
-	#include "../src/algorithm.h"
-	#include "../src/draw.h"
-#else // PARTITION_CORE is defined.
-	// Allow some types to be used without being fully defined by header inclusion.
-	// This is useful for minimal builds such as partition-rosetta.
-	struct RsampleData; struct coordinates;
-#endif //PARTITION_CORE
+// Allow some types to be used without being fully defined by header inclusion.
+// This is useful for minimal builds such as partition-rosetta.
+struct RsampleData; struct coordinates;
 
 //! RNA Class.
 /*!
@@ -1060,7 +1054,7 @@ class RNA: public Thermodynamics {
 		forceclass *fce;
 
 		//The following variables are needed for calculating, storing, and deleting drawing coordinates.
-		coordinates *structurecoordinates;
+		//coordinates *structurecoordinates;
 		bool drawallocated;
 
 		// Holds error messages that occur when reading files, so additional information can be shown to the users (e.g. in GUI programs where console output is not seen).
