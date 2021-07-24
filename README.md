@@ -15,6 +15,8 @@ make exe/CSSR
 exe/CSSR input.pdb output.dssr
 ```
 
+Use the ``exe/CSSR -h`` option to get detail document.
+
 ## License ##
 
 This program is free software: you can redistribute it and/or modify
