@@ -39,9 +39,6 @@ void RNA::init(const char * sequenceOrFileName, const RNAInputType fileType, con
     //Indicate that the energy data is not read.
     energyallocated = false;
 
-    //Drawing coordinates have not been determined.
-    drawallocated = false;
-
     //Do not report progress by default:
     progress=NULL;
 
@@ -144,7 +141,6 @@ const char* RNA::GetErrorMessage(const int error) {
         case 16: return "Wrong save file version used or file format not recognized.\n";
         case 17: return "This function cannot be performed unless a save file (.sav) was correctly loaded by the RNA constructor.\n";
         case 18: return "This threshold is too low to generate valid secondary structures.\n";
-        //case 19: return "The structure coordinates have not been determined, use DetermineDrawingCoordinates() to calculate the coordinates.\n";
         case 20: return "No sequence has been read.\n";
         case 21: return "Probabilities summed to greater than 1 in stochastic traceback.\n";
         case 22: return "Programming error.  Incorrect file type passed to constructor.\n";

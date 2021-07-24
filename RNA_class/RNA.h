@@ -20,7 +20,7 @@
 
 // Allow some types to be used without being fully defined by header inclusion.
 // This is useful for minimal builds such as partition-rosetta.
-struct RsampleData; struct coordinates;
+struct coordinates;
 
 //! RNA Class.
 /*!
@@ -334,16 +334,6 @@ class RNA: public Thermodynamics {
 		//! \return An int that indicates an error code (0 = no error, 5 = error reading thermodynamic parameter files).
 		int PartitionFunction(const char savefile[]="",double temperature=-10.0, bool disablecoax=false, bool restoreSHAPE=true);
 		
-		//!Rsample function calculates partition function with the pseudo-dg restraints from Rsample algorithm. It calls partition function twice. 
-		//! \param experimentalRestraints is a 0-based vector of experimental restraints (such as SHAPE or DMS).
-		//! \param refdata are 3 vectors read by RsampleData calss that contain paired-end, paired-middle and unpaired reference reactivities.
-		//! \param savefile is a c string that contains the path and filename for creating a save file.  This defaults to "", which indicates no file is to be written.
-		//! \param cparam is the C parameter that Rsample algorith uses. Default value is 0.5.
-		//! \param offset is the Offset parameter that Rsample algorith uses. Default value is 1.1.
-		//! \param numsamples is the number of samples to get from stochastic sampling routine called inside Rsample function. Default is 10,000.
-		//! \return An int that indicates an error code (0 = no error).
-		int Rsample(const vector<double> &experimentalRestraints, RsampleData &refdata, const int randomSeed=0, const char savefile[]="", const double cparam = 0.5, const double offset= 1.10, const int numsamples = 10000);
-
 		//! Predict structures containing highly probable pairs.
 
 		//! This function predicts structures composed of probable base pairs.
@@ -826,25 +816,6 @@ class RNA: public Thermodynamics {
 		//param j provides the 3' nucleotides in a pair. 
 		//void SetExperimentalBonus(const int i, const int j, const double bonus);
 
-		//*******************************************************
-		//Functions that provide drawing coordinates:
-		//*******************************************************
-		
-		//! Determine the coordinates for drawing a secondary structure.
-
-		//! This function determines drawing coordinates for all nucleotides in structure number structurenumber.
-		//! User must specify the height and width of a character (use the largest of nucleotides).
-		//! The coordinates are in an abstract palette; the user must determine the minimum and maximum coordinate in both the x and y direction.
-		//! The actual coordinates are fetched using GetNucleotideXCoordinate(int i) and GetNucleotideYCoordinate(int i).
-		//! This function returns are error code, where 0=no error and other messages can be resolved to a c string using GetErrorMessage.
-		//! The structure to be drawn must be free of pseudoknots.
-
-		//!\param height is an integer that refers to the height of a nucleotide.
-		//!\param width is an integer that refers to the width of a nucleotide, where the largest nucleotide should be provided or a non-proportional font should be used.
-		//!\param structurenumber is an integer that refers to the structure to be drawn.
-		//!\return An int that provides an error code, 0 = no error and other errors can be resolved to a c string using GetErrorMessage.
-		int DetermineDrawingCoordinates(const int height, const int width, const int structurenumber = 1);
-
 		//! Provide the comment from the ct file as a string.
 
 		//! This function provides the comment from the CT file for a structure as a string.
@@ -855,57 +826,6 @@ class RNA: public Thermodynamics {
 		std::string GetCommentString(const int structurenumber=1);
 		
 
-		//! Get the X coordinate for nucleotide i for drawing a structure.
-
-		//! This function gets the X coordinate for placing the nucleotide specified by i.  
-		//! The user needs to have determined the coordinates for a complete structure using DetermineDrawingCoordinates prior to making this call.
-		//! This function generates internal error codes that can be accessed by GetErrorCode(): 0 = no error, nonzero = error.
-		//! The errorcode can be resolved to a c string using GetErrorMessage.
-		//! Zero is returned in case of error, but note that zero is also a valid coordinate.
-		
-		//!\param i is an integer refering to the nucleotide to be drawn.
-		//!\return An int that gives the X coordinate.
-		int GetNucleotideXCoordinate(const int i);
-
-		//! Get the Y coordinate for nucleotide i for drawing a structure.
-
-		//! This function gets the Y coordinate for placing the nucleotide specified by i.  
-		//! The user needs to have determined the coordinates for a complete structure using DetermineDrawingCoordinates prior to making this call.
-		//! This function generates internal error codes that can be accessed by GetErrorCode(): 0 = no error, nonzero = error.
-		//! The errorcode can be resolved to a c string using GetErrorMessage.
-		//! Zero is returned in case of error, but note that zero is also a valid coordinate.
-		
-		//!\param i is an integer refering to the nucleotide to be drawn.
-		//!\return An int that gives the Y coordinate.
-		int GetNucleotideYCoordinate(const int i);
-
-		//! Get the X coordinate for placing the nucleotide index label specified by i.
-
-		//! This function gets the X coordinate for placing the nucleotide index label specified by i.  
-		//! The user needs to have determined the coordinates for a complete structure using DetermineDrawingCoordinates prior to making this call.
-		//! This function generates internal error codes that can be accessed by GetErrorCode(): 0 = no error, nonzero = error.
-		//! The errorcode can be resolved to a c string using GetErrorMessage.
-		//! Zero is returned in case of error, but note that zero is also a valid coordinate.
-		//! One additiona caveat: Labels that are placed at 0,0 are lables that would have overlapped nucleotides.  These labels should not be drawn.
-		
-		//!\param i is an integer refering to the label to be drawn.  This needs to be a multiple of 10.
-		//!\return An int that gives the X coordinate.
-		int GetLabelXCoordinate(const int i);
-
-		//! Get the Y coordinate for placing the nucleotide index label specified by i.
-
-		//! This function gets the Y coordinate for placing the nucleotide index label specified by i.  
-		//! The user needs to have determined the coordinates for a complete structure using DetermineDrawingCoordinates prior to making this call.
-		//! This function generates internal error codes that can be accessed by GetErrorCode(): 0 = no error, nonzero = error.
-		//! The errorcode can be resolved to a c string using GetErrorMessage.
-		//! Zero is returned in case of error, but note that zero is also a valid coordinate.
-		//! One additiona caveat: Labels that are placed at 0,0 are lables that would have overlapped nucleotides.  These labels should not be drawn.
-		
-		//!\param i is an integer refering to the label to be drawn.  This needs to be a multiple of 10.
-		//!\return An int that gives the Y coordinate.
-		int GetLabelYCoordinate(const int i);
-
-		
 		//*****************************************************
 		//Functions that return information about the sequence:
 		//*****************************************************
@@ -1052,10 +972,6 @@ class RNA: public Thermodynamics {
 		//The following variables are used by both partition function calculations and save file restoration.
 		bool *lfce,*mod;
 		forceclass *fce;
-
-		//The following variables are needed for calculating, storing, and deleting drawing coordinates.
-		//coordinates *structurecoordinates;
-		bool drawallocated;
 
 		// Holds error messages that occur when reading files, so additional information can be shown to the users (e.g. in GUI programs where console output is not seen).
 		string lastErrorDetails;
