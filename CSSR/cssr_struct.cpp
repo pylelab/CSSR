@@ -393,8 +393,8 @@ void cssr_bpseq(const vector<string>&res_str_vec,
             )==filtered_bp_vec.end()) continue;
         r1=res2int_map[bp_vec[bp].second[0]];
         r2=res2int_map[bp_vec[bp].second[1]];
-        bpseq_vec[r1][2]=r2;
-        bpseq_vec[r2][2]=r1;
+        bpseq_vec[r1][2]=r2+1;
+        bpseq_vec[r2][2]=r1+1;
     }
     map<string, size_t>().swap(res2int_map);
     return;
