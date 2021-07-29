@@ -1,12 +1,11 @@
 /*
  * A program that creates structures based on levels of probable pairs.
- *
- * (c) 2009 Mathews Lab, University of Rochester Medical Center.
- * Written by Jessica S. Reuter
+ * This program is based on the ProbablePair program written by
+ * Jessica S. Reuter from the David Mathews lab
  */
 
-#ifndef PROBABLE_PAIRS_H
-#define PROBABLE_PAIRS_H
+#ifndef PROBABLE_PAIRS_RR_H
+#define PROBABLE_PAIRS_RR_H
 
 #include "../RNA_class/RNA.h"
 #include "../src/ErrorChecker.h"
