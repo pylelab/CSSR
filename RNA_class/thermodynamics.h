@@ -34,20 +34,6 @@ class Thermodynamics {
 		//Functions that pertain to folding temperature:
 		//**********************************************
 
-		//!Set the temperature of folding in K.
-
-		//!This function allows the user to specify folding temperatures other than 310.15 K (37 degrees C).
-		//!This changes folding free energy changes that would be returned for existing structures and would alter the set of structures predicted.
-		//!When this function is called, the thermodynamic parameter files are immediately read from disk.  These include both enthalpy
-		//!parameters (.dh files) and free energy changes at 310.15 (.dat files).  The files must either be at a location indicated by the $DATAPATH
-		//!environment variable or in pwd.  Changing the temperature only alters subsequent calculations.  For example, if a structure prediction
-		//!method has been called, the set of predicted structures are not changed at the time of a call to SetTemperature.  Likewise, SetTemperature
-		//!must be called before calling a structure prediction method if a temperature other than the 310.15 K default is desired.
-		//!The function returns an error code where 0 is no error and non-zero errors can be parsed by by GetErrorMessage() or GetErrorMessageString() in an inheriting class.
-		//\param temperature is double that indicates the folding temperature in K.
-		//\return An integer that indicates an error code for reading the thermodynamic parameters.  0 = no error.  5 = files not found.
-		int SetTemperature(double temperature);
-
 		//!Get the current folding temperature in K.
 		//!\return A double that indicates the folding temperature in K.
 		double GetTemperature() const;
@@ -73,12 +59,6 @@ class Thermodynamics {
 		//! \param temperature specify a custom temperature. If this parameter is less than zero it is ignored. Otherwise the free energy parameters are recalculated to apply to the specified temperature.
 		int ReadThermodynamic(const char *directory=NULL, const char *alphabet=NULL, const double temperature=-1.0);
 
-		//! Re-loads the free energy data tables from the original directory and 
-		//!    using the original alphabet name.
-		//! \param temperature specify a custom temperature. If this parameter is less than zero it is ignored. 
-		//!        Otherwise the free energy parameters are recalculated to apply to the specified temperature.
-		//! 	   scaled to the specified temperature.
-		int ReloadDataTables(const double new_temperature=-1.0);
 
 		//! Force the datatables to be read if they haven't already. Return true if the tables were already loaded or if the attempt to (re)open them succeded. 
 		bool VerifyThermodynamic(); 
@@ -93,14 +73,6 @@ class Thermodynamics {
 		//!\return A pointer to datatable with free energy change parameters.
 		datatable *GetDatatable();
 
-		
-
-		//! This function is used to provide an enthalpy table.
-		//! This function will return a NULL pointer if there is an error reading the tables from disk.
-		//! It is important that programs check the status of the pointer before using it, i.e. make sure it is not NULL.
-		//! \param alphabet Specify which alphabet to use. If this is NULL (the default) the currently loaded alphabet, if there is one, will be used. Otherwise either default RNA or DNA alphabet will be used, depending on the value of isrna.
-		//! \return A pointer to datatable with the enthalpy change parameters.
-		datatable *GetEnthalpyTable(const char* alphabet=NULL);
 
 		//! Clear the currently loaded energy datatable and release its resources.
 		void ClearEnergies();

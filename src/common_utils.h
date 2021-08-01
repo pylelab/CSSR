@@ -36,38 +36,11 @@ bool isStdIoFile(const char* const fullPath);
 //! If removeExtension is true, the file extension is also removed.
 string getFileName(const char * const path, bool removeExtension = false);
 
-//! Gets the portion of a path that represents the file extension 
-//! i.e. the part of the file name after the last dot (.)
-string getFileExt(const string& filePath);
-
-//! Gets the directory portion of a path. 
-//! It is assumed that the path represents a file.
-string getDirName(const char * const path);
 //###################### STRING Utilities ##################################
-
-//! Create a valid file name from a string label (which could contain invalid characters)
-//! and an optional extension.
-//! If the label is too long for a filename, the name is truncated.
-string createSafeFilename(const string& label, const string& extension="", bool replaceSpaceChar=false);
 
 // Utility function that creates a string and fills it by sprintf-formatting the arguments. 
 string sfmt(const char* const format, ...);
 
-
-// The following string functions operate in-place on their subjects
-// and then return a reference to that same subject (for coding fluency).
-
-//! Converts control characters in subject into escape sequences.
-//! (useful for debugging strings that might contain control characters.)
-//! e.g. "Hello\n" becomes "Hello\\n" 
-//! i.e. The linefeed is converted into a literal slash and the letter 'n'
-//! (operates in-place on subject and returns it).
-string& escapeChars(string &subject);
-
-//! Finds invalid file name characters in a string and replaces them with the 
-//!   specified character (usually underscore '_').
-//! Operates in-place on the subject string.
-string& replaceInvalidFileNameChars(string &subject, char replaceWith='_', bool replaceSpace=false);
 
 //! Trim leading whitespace from a string (operates in-place on subject and returns it).
 string& trimLeft(string &subject);
@@ -110,13 +83,6 @@ std::size_t findchr(const char* const subject, const char find);
 //! Returns true if a c-string is NULL or empty ("")
 //! Equivalent to (cstr==NULL||strlen(cstr)==0)
 inline bool is_blank(const char*const cstr) { return cstr==NULL||*cstr=='\0'; } // if the first character is the null-char, '\0', the string length is 0.
-
-//! Make a copy of a c-string (i.e. a char* or char[] etc) 
-//! There's a lot of code duplicated around RNAstructure that does this (and should use
-//! this function instead).
-//! \returns A pointer to a newly allocated buffer that is a copy of the source buffer.
-//!          The returned pointer must be deleted later on.
-char* copy_cstr(const char* src);
 
 //! Converts a cstring (char*) into a string, making sure not to
 //! dereference a NULL pointer.
@@ -234,20 +200,5 @@ private:
 	auto_delete(const auto_delete &copy){}  // disable the copy constructor
 	auto_delete& operator=(const auto_delete &copy){} // disable the assignment operator
 };
-
-//! Cross-Platform `getline` 
-//! Accepts DOS ("\r\n"), Old-Mac ("\r"), and Unix ("\n") line endings.
-//! This allows e.g. DOS files to be read on Linux etc. 
-//! (Note that even as of 2018, some programs on Mac OSX still 
-//! use the old-style carriage-return-only line endings.)
-std::istream& getlineXP(std::istream& in, std::string& line);
-
-//###################### Operating System Compatibility ##################################
-//! Windows's printf function incorrectly outputs 3-digit exponents when only 2 digits 
-//! are required, violating the C99+ spec. e.g. Windows: "1e-002" vs Linux: "1e-02"
-//! This causes issues with regression tests due to different output on each OS.
-//!
-//! Calling this function (before relevant output) fixes the problem.
-void FixWindowsExponentFormat();
 
 #endif // COMMON_UTILS_H

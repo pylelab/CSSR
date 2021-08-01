@@ -44,7 +44,6 @@ void forcedomain(int x,int y,structure *ct,forceclass *v);
 void forcesingle(int x,structure* ct,forceclass *v);
 void forcedbl(int dbl,structure* ct,forceclass *w,bool *v);
 void forceinter(int dbl,structure* ct,forceclass *w);
-void forceinterefn(int dbl,structure* ct,forceclass *w);
 
 //returns true if pair i and j is not a GU pair and the most adjacent pairs are not GU
 //	used with chemical modification data to make sure that some contributions are not over-counted

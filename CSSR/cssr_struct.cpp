@@ -533,14 +533,6 @@ inline bool bp_nn_score(const bool previnextj, const bool nextiprevj,
     return true;
 }
 
-inline float mean_vec(const vector<float>&vec)
-{
-    float sum=0;
-    int i;
-    for (i=0;i<vec.size();i++) sum+=vec[i];
-    return sum/vec.size();
-}
-
 void cssr(const ModelUnit &pdb_entry, vector<string>&res_str_vec,
     vector<pair<float,vector<string> > >&bp_vec, 
     vector<pair<float,pair<int,int> > >&RR_list, const bool interchain)

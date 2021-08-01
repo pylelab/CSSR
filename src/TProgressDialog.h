@@ -199,26 +199,6 @@ class PartialProgress : public ProgressHandler {
    */
    void cancel();
 
-   //! Call this to set the percentage of work that is to be completed in the next step of the program.
-   void setNextStep(const int percentWorkInNextStep);
-
-   //! Explicitly set the total (true) amount of work already completed.
-   //! (This is called implicitly by advanceStep and stepComplete.)
-   //! \param percentWorkCompleted The total true amount of work already completed.
-   void setWorkComplete(const int percentWorkCompleted);
-
-   //! Add all work completed in the previous step to the total 
-   //! work complete and then update the client progress.
-   //! (This is called implicitly by advanceStep.)
-   void stepComplete();
-
-   //! This calls stepComplete() to add all work completed in the previous step and then
-   //! calls setNextStep to set the percentage of work that is to be completed in the next step of the program.
-   //! \param percentWorkInNextStep The percentage of work that is to be completed in the next step of the program.
-   void advanceToNextStep(const int percentWorkInNextStep);
-
-   //! Set a new inner-ProgressHandler.
-   void setClient(ProgressHandler* client);
 
    private:
      ProgressHandler* client; // the ProgressHandler passed in by client code.

@@ -137,14 +137,6 @@ void forceinter(int dbl,structure* ct,forceclass *w) {
 	}
 }
 
-void forceinterefn(int dbl,structure* ct,forceclass *w) {
-	int i,j;
-	for(i=dbl+1;i<=ct->GetSequenceLength();i++) {
-		for (j=1;j<dbl;j++) {
-			w->f(j,i) = w->f(j,i)|INTER;
-		}
-	}
-}
 
 //force is used to enforce the folding constraints specified in a structure
 //The following definitions are bitwise applied to the fce array:

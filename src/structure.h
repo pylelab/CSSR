@@ -86,11 +86,6 @@ class structure //this structure contains all the info for a structure
 		//Get and receive sequence and structure information:
 		//*********************************
 
-		//! Get the label for structure numer structurenumber.
-
-		//! \param structurenumber is an int that gives the structure number being indexed, this is one indexed.
-		//! \return a string that gives the label.
-		string GetCtLabel(int structurenumber) const;
 
 		//! Get the energy for structure number structurenumber.
 
@@ -129,83 +124,6 @@ class structure //this structure contains all the info for a structure
 
 		const char* GetSequence() const;
 		
-		//! Remove the pair at index i for structure number structurenumber.
-
-		//! If i is paired to j, the pairing for j is also removed.
-		//! \param i is the nucleotide for whic pairing is to be removed.  This is one-indexed.
-		//! \param structurenumber is an int that provides from which structure the pair should be removed.  This is one-indexed.
-		void RemovePair(int i, int structurenumber=1);
-
-		//! Determine if the structure has one or more Pseudoknots (crossing bonds).
-		bool HasPseudoknots(int structurenumber=1) const ;
-
-		//! This function determines which base pairs in a structure are "pseudoknots" by finding the 
-		//! the largest subset of non-crossing bonds.
-		//! The caller can retrieve the list of "normal" bonds (normalPairs) or the list of 
-		//! pseudoknots (pseudoknotPairs) or both.
-		//!
-		//! This function does NOT modify the structure itself.
-		//!
-		//! Note that the resulting list of pseudoknots may itself have 2nd-order pseudoknots (crossing bonds).
-		//! Example: currentPairs     (input)  = [ 6, 5, 7, 8, 2, 1, 3, 4 ] == { 1:6  2:5  3:7  4:8 }
-		//!          normalPairs      (output) = [ 6, 5, 0, 0, 2, 1, 0, 0 ] == { 1:6  2:5           }
-		//!          pseudoknotPairs  (output) = [ 0, 0, 7, 8, 0, 0, 3, 4 ] == {           3:7  4:8 }
-		//!            (note that the two pairs in the example's pseudoknot group are mutually crossing)
-		//! /param pseudoknotPairs  A pointer to a result vector that should be filled with base pairing information for pseudoknot pairs 
-		//!             (i.e. any pair that is NOT in the optimal set of non-crossing pairs. 
-		//!             This pointer can be NULL in which case it is ignored.
-		//! /param normalPairs  A pointer to a result vector that should be filled with base pairing information for all pairs that are in
-		//!             the largest subset of non-crossing pairs. These represent the "normal", NON-pseudoknot basepairs. 
-		//!             This can be NULL in which case it is ignored.
-		void FindPseudoknots(const int structurenumber, vector<int> *pseudoknotPairs=NULL, vector<int> *normalPairs=NULL) const;
-
-		//! Fills the results output vector with the "pseudoknot rank" of each base pair in this structure.
-		//! This method is sequence and energy agnostic, and it does NOT modify the structure itself.
-		//! 
-		//! In general, a structure contains multiple base pairs some of which may "cross" each other.  
-		//! It is possible to separate all pairs into distinct groups such that in each group no pair 
-		//! crosses any other. We can then rank the groups by the total number of pairs in each.
-		//!
-		//! Thus the "pseudoknot rank" is hereby defined as: 
-		//!     0 for unpaired bases
-		//!     1 for bases with pairs in the largest non-crossing pair group (i.e. the normal, "NON-pseudoknot" pairs)
-		//!     2 for bases with pairs in the 2nd-largest non-crossing pair group (i.e.  first-order pseudoknots)
-		//!     3 for bases with pairs in the 3nd-largest non-crossing pair group (i.e.  second-order pseudoknots)
-		//!     ... and so on.
-		//!  Thus any pair with rank of 1 is what we consider a "normal", NON-pseudoknot pair, while 
-		//!  any pair with a rank greater than 1 indicates a "pseudoknot" pair.
-		//!  Importantly, note that this is NOT the same as the "crossing count" (the number of pairs in 
-		//!  the structure that cross a given pair).
-		//!  Two pairs could have the same crossing count, but have different rank values.
-		//!  
-		//!  Example:
-		//!   Consider a structure with the following base pairs:  1:11, 2:10, 3:9, 4:13, 5:12, 6:14 and 7:8
-		//!           ┌──14   Pairs 1, 2, and 3 do not cross each other, but they are crossed pairs 4, 5, and 6.
-		//!       ┌───│──13   Pairs 4 and 5 do not cross each other, but they are crossed by pair 6.
-		//!       │ ┌─│──12   Pair 7 does not cross any other pairs.
-		//!    1──│─│─│──11   So the largest group of mutually non-crossing pairs (rank = 1) is { 1, 2, 3, and 7 }.
-		//!    2──│─│─│──10   The second largest group (rank = 2) is formed by pairs { 4, and 5 }.
-		//!    3──│─│─│───9   The third largest group (rank = 3) is formed by pair { 6 }.
-		//!    4──┘ │ │        
-		//!    5────┘ │       The input pairs vector and the corresponding getPseudoknotPairRanks results vector for this 
-		//!    6──────┘       example would be:       pairs   = [ (0), 11, 10, 9, 13, 12, 14, 8, 7, 3, 2, 1, 5, 4, 6 ]
-		//!    7──────────8                           results = [ (0),  1,  1, 1,  2,  2,  3, 1, 1, 1, 1, 1, 2, 2, 3 ]
-		//!
-		//! /param pairs (intput) A reference to a vector containing base pairing information in the format used by the singlestructure class 
-		//!              (i.e. if a basepair exists between i and j, then pairs[i]==j and pairs[j]==i ).
-		//! /param results (output) A reference to a vector that will be filled with the pair rank of each corresponding pair in `pairs`.
-		//!              (i.e. if a basepair exists between i and j in pairs, then results[i] and results[j] will both be set to the 
-		//!              rank of the basepair between i and j.
-		void GetPseudoknotRanks(vector<int> &results, const int structurenumber=1) const;
-
-		//! Remove all basepairs that represent PseudoKnots (i.e. all bonds with a "crossing level" of 2 or higher).
-		//! This method is sequence and energy agnostic. 
-		//! \param structurenumber The index of the structure to break.
-		//! \param brokenPairs A pointer to a vector of integers that will be filled with the 
-		//!                    base-pairing information for bases that were broken. This vector has the same format as
-		//!                    the singlestructure::basepr vector.
-		//!					   If this parameter is NULL, no information about broken pairs will be returned.
-		void BreakPseudoknots(int structurenumber=1, vector<int> *brokenPairs=NULL);
 
 		//! Set the label for a structure, using a string.
 
@@ -273,12 +191,6 @@ class structure //this structure contains all the info for a structure
 		//! \param i is an int that indicates the nucleotide position, one indexed. 
 		void AddDouble(int i);
 
-		//! Add a pair of nucleotides to the list of those not allowed to form.
-
-		//! \param i is an int that indicates the 5' nucleotide position, one indexed.
-		//! \param j is an int that indicates the 3' nucleotide position, one indexed.
-		void AddForbiddenPair(int i, int j);
-
 		//! Add a nucleotide to the list of Us in GU pairs.
 
 		//! Note that there is no error checking.  This nucleotide must be a U.
@@ -303,8 +215,6 @@ class structure //this structure contains all the info for a structure
 		//! \param i is an int that indicates the nucleotide position, one indexed. 
 		void AddSingle(int i);
 
-		//! Add a domain constraint that requires all nucleotides n, where i <= n <= j, to only pair between i and j
-		void AddDomain(int i, int j);
 
 		//!	Indicate if pairing distance is limited for structrure prediction methods.
 
@@ -408,11 +318,6 @@ class structure //this structure contains all the info for a structure
 		int GetSingle(int i);
 		
 
-        
-        //! Remove the specified number of single-stranded constraints (pop off from end)
-        void RemoveSingleStrandConstraints(int number);
-        
-
 
 		//! Returns a nucleotide that defines the 5' end of a domain
 		int GetDomain5(int i);
@@ -426,49 +331,10 @@ class structure //this structure contains all the info for a structure
 		void RemoveConstraints();
 
 
-		//! Set a maximum pairing distance between nucleotides that can pair.  
-
-		//! For nucleotides i and j, if |j-i|>=ct->maxdistance, the nucleotides cannot pair.
-		//! This also sets a bool so that DistanceLimited() will return true.
-		//! \param maxdistance is an int that will be the maximum distance.
-		void SetPairingDistance(int maxdistance);
-
 
 		//*********************************
 		//Functions for disk I/O
 		//*********************************
-
-		//! Write a ct file to disk.
-		//! \param ctoutfile is a pointer to a c-string that provides a filename.
-		//! \param append is a bool that indicates if these structures should be appended to the end of the file.  
-		//!            The default, false, is to overwrite any existing file.
-		//! \param commentProvider a reference to an object that returns application-defined comments for each structure 
-		//!		in a CT file. (e.g. "ENERGY = ..." ) 
-		//!         This parameter allows a program to customize when comments are written and how they appear. 
-		//!     For example many programs write "ENERGY = ..." but only when GetEnergy() != 0.
-		//!     However, a program like MaxExpect might write "SCORE = ..." (even if GetEnergy() returns zero).
-		//!     Similarly, Design might want to add comments like "NED = 0.02" which would require a different source of information than
-		//!     GetEnergy() -- or at the very least, different formatting/precision. 
-		//!         To provide custom comments, pass an in an object derived from CTCommentProvider that has overridden 
-		//!     the getComment function. To disable comments, pass in CTComments::None. 
-		//!     The default is CTComments::Energy, which provides legacy "ENERGY = ..." comments.
-		int ctout(const char * const ctoutfile, const bool append=false, CTCommentProvider &commentProvider=CTComments::Energy) const;
-
-		//! Write a dot-bracket file.
-		//! Pseudoknots are encoded using alternate symbol pairs (parentheses, square brackets, curly brances, 
-		//! angled brackets and then upper/lower case letters (e.g. 'A' opens, 'a' closes).
-		//! \param filename is a const char pointer to a Null-terminated cstring that provides a filename.
-		//! \param structurenumber the 1-based index of the structure to write. If this is -1 (the default) all structures are written.
-		//! \param format One of the DotBracketFormat enum values that specify the format of dot-bracket 
-		//!        files that contain multiple structures (i.e. structurenumber==-1).
-		//!        This determines whether the structure title and sequence are written once at the top followed by 
-		//!        multiple lines of brackets or the structure title and sequence are written out individually for each structure etc.
-		//! \param commentProvider Allows customization of structure labels. See ctout parameter information for commentProvider.
-		//! \return Returns 0 if successful. Otherwise returns an error code corresponding to those defined in RNA::GetErrorMessage(int code).
-		int writedotbracket(const char * const filename, const int structurenumber=-1, 
-			const DotBracketFormat format=DBN_FMT_MULTI_TITLE,
-			CTCommentProvider &commentProvider=CTComments::Energy, 
-			const bool append = false) const;
 
 		//! Open a CT File.
 		//! This opens a ct file and stores all the information in this instance of structure.
@@ -487,19 +353,6 @@ class structure //this structure contains all the info for a structure
 		//! \return The return value is 0 on success and non-zero on error. The error code returned corresponds to those defined in RNA::GetErrorMessage.
 		int opendbn(const char *bracketFile);
 
-		//! Write the sequence to a file. The output format can be SEQ, FASTA, or plain text.
-		//! \param seqfile is a const char pointer to a cstring that gives the filename, including any path information.
-		//! \param seqFileType indicates the type of sequence file to write: 0=Plain Text (No label or delimiters etc), 1=SEQ, 2=FASTA (default)
-		//! \param append if true, the file will be appended to instead of overwritten if it exists.
-		//! \return An int that indicates an error state: 1 on no error and 0 on error.
-		int writeseq (const char *seqfile, int seqFileType = 2, bool append = false);
-
-		//! Open a sequence file.
-		//! This function works on .seq and FASTA files as well as plain-text sequences.
-		//! \param seqfile is a const char pointer to a cstring that gives the filename, including any path information.
-		//! \return An int that indicates an error state: 1 on no error and 0 on error.
-		int openseq (const char *seqfile);
-		
 		//! Open a sequence file.
 		//! This function works on .seq and FASTA files as well as plain-text sequences.
 		//! Importantly, this function differs from the legacy openseq in its return codes. openseq returns 1 on 
@@ -527,14 +380,6 @@ class structure //this structure contains all the info for a structure
 		//! Remove the last structure.
 		void RemoveLastStructure();
 		
-		//! Remove all structures.
-		void RemoveAllStructures();
-
-		//! Remove the structure at structurenumber.
-		
-		//! If the last structure is being removed, it is more efficient to use RemoveLastStructure();
-		//! \param structurenumber is an int that is the index to which structure should be removed.  This is one indexed.
-		void RemoveStructure(int structurenumber);
 
 		//********************************
 		//Functions for accessing the datatable pointer or opening the datatables
@@ -554,8 +399,6 @@ class structure //this structure contains all the info for a structure
 
 		//! Returns true if the data property has been set to a valid datatable and its alphabet has been successfully read.
 		bool IsAlphabetLoaded();
-		//! Returns true if the data property has been set to a valid datatable and the thermodyanamic tables have been read.
-		bool IsThermoDataLoaded();
 
 		//********************************
 		//Additional functions
@@ -568,11 +411,6 @@ class structure //this structure contains all the info for a structure
 		void sort();
 
 
-		//! Find problem in the set of structures.
-
-		//! This function is for debugging.  It checks each pair in each structure to look for inconsistencies. 
-		//! \return true when an inconstency with pairing is found and false otherwise.
-		bool ProblemwithStructures();
 
 		//! This function reads a SHAPE reactivity datafile and parse the data into single-stranded amd chemical modification constraints.
 		//! This function is largely depracated by the pseudo-free energy approach.  It is still available for experimentation.
@@ -587,26 +425,12 @@ class structure //this structure contains all the info for a structure
 		//! \return 0 on success or an error code compatible with RNA::GetErrorMessage (for example 1=file not found, 2=could not open file)
 		int ReadSHAPE(const char *filename, RestraintType modifier=RESTRAINT_SHAPE, bool calculatePseudoEnergies=true);//Read SHAPE reactivity data from a file
 
-		//! Read offset files
-		//! This function must be called ofter reading SHAPE files, if read, because the same infrastructure is used.
-		//! Either filename can be NULL, in which case that offset is not recorded.
-		//! \param SSOffset provides free energies to add to nucleotides if they are single-stranded
-		//! \param DSOffset provides free energies to add to nucleotides if they are double-stranded
-		//! \return 0 on success or an error code compatible with RNA::GetErrorMessage (for example 1=file not found, 2=could not open file)
-		int ReadOffset(const char *SSOffset, const char *DSOffset);//Read Free Energy Offset Files.
-
 		//! This function reads an experimental pair bonus file, similar to SHAPE, but just straightforward
 		//! application as kcal bonuses.  As with SHAPE, bonus is applied at 0x, 1x, and 2x for
 		//!  single stranded, edge base pairs, and internal base pairs.
 		//! \return 0 on success or an error code compatible with RNA::GetErrorMessage (for example 1=file not found, 2=could not open file)		
 		int ReadExperimentalPairBonus(const char *filename, double const experimentalOffset = 0.0, double const experimentalScaling = 1.0 );
 
-		//! Write SHAPE and SHAPEss parameters out to file, exactly as they are currently stored.
-		//! Currently this is just for debugging purposes.
-		//! \return 0 on success or 2 if the file cannot be opened for writing.
-		//! \param printHeaders If true, the sequence label and headers "SHAPE" and "SHAPEss" 
-		//!        will be written on separate lines following a hash (#) symbol.
-		int WriteSHAPE(const string &outfile, bool printHeaders = true);
 
 
 		//! Deletes the SHAPE, SHAPEss, and SHAPEss_region arrays if the have been allocated.
@@ -644,7 +468,6 @@ class structure //this structure contains all the info for a structure
 					//the equilibrium constant is multiplied by constant[j][i] when the i-j pair is formed. 
 					//NOTE: The use of constant is NOT orthogonal to using chemical modification data.  They cannot
 					//both be used at once.
-		void allocateconstant();//Function to allocate memory for constant array.
 		bool SHAPEFileRead;
 
 
@@ -670,14 +493,6 @@ class structure //this structure contains all the info for a structure
 			return (std::find(data->alphabet[numseq[i]].begin(), data->alphabet[numseq[i]].end(), c) != data->alphabet[numseq[i]].end());
 		}
 
-		void RemoveEnergyLabels(const char* customLabel=NULL);
-
-		//! Generates constraint matrix that can be passed to partition-cuda.
-		//! Currently only supports forbidden pairs and specific forced base pairs.
-		//! Constraints that force a base to be double stranded, but without a 
-		//!    specific pairing partner are ignored.
-		int *generate_constraint_matrix();
-		
 		//! Sets the default behavior regarding non-critical warnings. 
 		//! 1 (ON)  -- Write warnings to stdout.
 		//! 2 (ERR) -- Write warnings to STDERR for better error detection in scripts etc..
@@ -805,7 +620,6 @@ class structure //this structure contains all the info for a structure
 
 #ifndef SWIG // The following should be excluded from SWIG code generation
 
-int ecompare(const void *i, const void *j);
 
 integersize ergcoaxflushbases(int i, int j, int ip, int jp, datatable *data);
 //this function calculates flush coaxial stacking
@@ -817,13 +631,6 @@ integersize ergcoaxinterbases2(int i, int j, int ip, int jp, int k, int l, datat
 integersize ergcoaxflushbases(int i, int j, int ip, int jp, structure *ct, datatable *data);
 integersize ergcoaxinterbases1(int i, int j, int ip, int jp, structure *ct, datatable *data);
 integersize ergcoaxinterbases2(int i, int j, int ip, int jp, structure *ct, datatable *data);
-int decon1(int x,int alphabetsize);//used by ergmulti to find a nucleotide from a base pair
-int decon2(int x, int alphabetsize);//used by ergmulti to find a nucleotide from a base pair
-integersize ergmulti(int st, int ip, structure *ct, datatable *data, bool simplemb);
-//calculate the multi branch loop free energy for a loop starting at nuc ip
-//	in structure number st of ct
-integersize ergexterior(int st, structure *ct, datatable *data, int start=1, int stop=0);
-//calculate the exterior loop free energy in structure number ip
 
 
 integersize erg1(int i,int j,int ip,int jp,structure *ct,datatable *data);
@@ -831,11 +638,6 @@ integersize erg1(int i,int j,int ip,int jp,structure *ct,datatable *data);
 integersize erg2(int i,int j,int ip,int jp,structure *ct,datatable *data,char a,
 	char b);
 		//calculates energy of a bulge/internal loop
-integersize erg2in(int i,int j,int ip,int jp,structure *ct, datatable *data,char a,
-	char b);
-		//calculates the energy of an interior part of an internal loop (includes asymmetry)
-integersize erg2ex(int i,int j,int size,structure *ct, datatable *data);
-		//calculates the energy of an exterior part of an internal loop (only has length and terminal stack components)
 integersize erg3(int i,int j,structure *ct,datatable *data,char dbl);
 		//calculates energy of a hairpin loop
 integersize erg4(int i,int j,int ip,int jp,structure *ct,datatable *data,
@@ -876,53 +678,8 @@ inline integersize penalty_nc(int i,int j,structure* ct, datatable *data) {
 	return energy;
 }
 
-integersize ergcoax(int i, int j, int ip, int jp, int k, structure *ct, datatable *data);
-	//returns the free energy of coaxial stacking of i-j onto ip-jp
-
-
-//When adding the included and excluded fragments for a structure with pair i-j, the SHAPE free energy needs correction
-//so that it is not counted twice.
-
-
-//Write the structure class-specific items in a save file
-void writestructuresave(ofstream *out, structure *ct);
-
-//Read the structure class-specific items in a save file
-void openstructuresave(ifstream *out, structure *ct);
-
-//! If the label contains "ENERGY = <NUMBER>" at the start of the string, it will be removed,
-//! leaving the remaining text intact. Leading whitespace is also removed.
-//! A custom label can be specified instead of "ENERGY", in which case, the full text to be removed 
-//! is "<customLabel> = <NUMBER>".
-//! /param text A reference to the string that contains the structure label. It will be modified in-place.
-//! /param customLabel A c-string that specifies what label to search for (and remove) from the start of the text. 
-//!            The default is "ENERGY". 
-void eraseEnergyLabel(string &text, const char*const customLabel="ENERGY");
 
 #endif // Place functions that should be available to client languages (e.g. Java, python etc) BELOW this line.
 
-//! Determine if the structure has one or more Pseudoknots (crossing bonds).
-bool hasPseudoknots(const vector<int> &pairs);
-
-//! Given a vector containing base-pairing information (currentPairs), this function determines 
-//! which pairs are "pseudoknots" by finding the the largest subset of non-crossing bonds.
-//! The caller can retrieve the list of "normal" bonds (normalPairs) or the list of pseudoknots (pseudoknotPairs)
-//! or both.
-//! This function does NOT modify the input vector (but it IS safe to pass a pointer to the input vector in as 
-//!   as either pseudoknotPairs or normalPairs in which case it will be written to, thus altering the structure.)
-//! Note that the list of pseudoknots may itself have 2nd-order pseudoknots (i.e. crossing bonds).
-//! Example: currentPairs     (input)  = [ 6, 5, 7, 8, 2, 1, 3, 4 ] == { 1:6  2:5  3:7  4:8 }
-//!          normalPairs      (output) = [ 6, 5, 0, 0, 2, 1, 0, 0 ] == { 1:6  2:5           }
-//!          pseudoknotPairs  (output) = [ 0, 0, 7, 8, 0, 0, 3, 4 ] == {           3:7  4:8 }
-//!            (note that the two pairs in the example's pseudoknot group are mutually crossing)
-//! /param currentPairs A reference to a vector containing base pairing information in the format used by the singlestructure class 
-//!             (i.e. if a basepair exists between i and j, then pairs[i]==j and pairs[j]==i ).
-//! /param pseudoknotPairs  A pointer to a result vector that should be filled with base pairing information for pseudoknot pairs 
-//!             (i.e. any pair that is NOT in the optimal set of non-crossing pairs. 
-//!             This pointer can be NULL in which case it is ignored.
-//! /param normalPairs  A pointer to a result vector that should be filled with base pairing information for all pairs that are in
-//!             the largest subset of non-crossing pairs. These represent the "normal", NON-pseudoknot basepairs. 
-//!             This can be NULL in which case it is ignored.
-void findPseudoknots(const vector<int> &currentPairs, vector<int> *pseudoknotPairs = NULL, vector<int> *normalPairs = NULL);
 
 #endif //STRUCTURE_H

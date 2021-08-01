@@ -94,11 +94,6 @@ PFPRECISION erg1(int i,int j,int ip,int jp,structure *ct,pfdatatable *data);
 PFPRECISION erg2(int i,int j,int ip,int jp,structure *ct,pfdatatable *data,char a,
 	char b);
 		//calculates equlibrium constant of a bulge/internal loop
-PFPRECISION erg2in(int i,int j,int ip,int jp,structure *ct, pfdatatable *data,char a=0,
-	char b=0);
-		//calculates the equilibrium constant of an internal portion of an internal/bulge loop 
-PFPRECISION erg2ex(int i,int j,int size, structure *ct, pfdatatable *data);
-		//calculates the equlibrium constant of an exterior fragment of am internal/bulge loop
 PFPRECISION erg3(int i,int j,structure *ct,pfdatatable *data,char dbl);
 		//calculates equlibrium constant of a hairpin loop
 PFPRECISION erg4(int i,int j,int ip,int jp,structure *ct,pfdatatable *data,
@@ -119,9 +114,6 @@ PFPRECISION ergcoaxinterbases1(int i, int j, int ip, int jp, structure *ct, pfda
 PFPRECISION ergcoaxinterbases2(int i, int j, int ip, int jp, structure *ct, pfdatatable *data);
 
 
-//pfunction performs the partition function calculation and saves the results to disk.
-void pfunction(structure* ct,pfdatatable* data, ProgressHandler* update, char* save, bool quickQ=false, PFPRECISION *Q=NULL);
-
 //writepfsave writes a save file with partition function data.
 void writepfsave(char *filename, structure *ct, 
 			 PFPRECISION *w5, PFPRECISION *w3, 
@@ -141,26 +133,7 @@ void rescale(int currenth,structure *ct, pfdatatable *data, DynProgArray<PFPRECI
 void rescale(int currenth,structure *ct, pfdatatable *data, DynProgArray<PFPRECISION> *v, DynProgArray<PFPRECISION> *w, DynProgArray<PFPRECISION> *wl, DynProgArray<PFPRECISION> *wcoax,
 			 DynProgArray<PFPRECISION> *wmb,DynProgArray<PFPRECISION> *wmbl, PFPRECISION *w5, PFPRECISION *w3, PFPRECISION **wca, PFPRECISION rescalefactor); //function to rescale all arrays when partition function calculation is headed out
 
-															//of bounds
-//void rescaleatw3(int ii,structure *ct, pfdatatable *data, DynProgArray<PFPRECISION> *v, DynProgArray<PFPRECISION> *w, DynProgArray<PFPRECISION> *wl, DynProgArray<PFPRECISION> *wcoax,
-//			 DynProgArray<PFPRECISION> *wmb,DynProgArray<PFPRECISION> *wmbl, PFPRECISION *w5, PFPRECISION *w3, double rescalefactor); //function to rescale all arrays when partition function calculation is headed out
-															//of bounds when claculating w3
-//void rescaleatw5(int jj,structure *ct, pfdatatable *data, DynProgArray<PFPRECISION> *v, DynProgArray<PFPRECISION> *w, DynProgArray<PFPRECISION> *wl, DynProgArray<PFPRECISION> *wcoax,
-//			 DynProgArray<PFPRECISION> *wmb,DynProgArray<PFPRECISION> *wmbl, PFPRECISION *w5, PFPRECISION *w3, double rescalefactor); //function to rescale all arrays when partition function calculation is headed out
-															//of bounds when claculating w5
-void thresh_structure(structure *ct, char *pfsfile, double thresh); //determine a structure of probable base pairs (greater than thresh) and deposit it in ct.
-
 //calculate a the partition function, given that the arrays have been allocated
 void calculatepfunction(structure* ct,pfdatatable* data, ProgressHandler* update, char* save, bool quickQ, PFPRECISION *Q,
 	DynProgArray<PFPRECISION> *w, DynProgArray<PFPRECISION> *v, DynProgArray<PFPRECISION> *wmb, DynProgArray<PFPRECISION> *wl, DynProgArray<PFPRECISION> *wlc, DynProgArray<PFPRECISION> *wmbl,
 	DynProgArray<PFPRECISION> *wcoax, forceclass *fce,PFPRECISION *w5,PFPRECISION *w3,bool *mod, bool *lfce, bool disablecoax=false);
-
-
-// This copies code from pclass.cpp
-//A function to convert free energies to equilibrium constants.
-//inline PFPRECISION boltzman(short i, PFPRECISION temp) {
-//
-//	if (i>=INFINITE_ENERGY) return 0;
-//	else return exp((-((PFPRECISION) i)/((PFPRECISION)conversionfactor))/(RKC*temp));
-//
-//}

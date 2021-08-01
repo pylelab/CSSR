@@ -127,15 +127,6 @@ bool ParseCommandLine::contains( const vector<string> &list ) {
 ///////////////////////////////////////////////////////////////////////////////
 // Get an optional value as a string.
 ///////////////////////////////////////////////////////////////////////////////
-string ParseCommandLine::getOptionString( const vector<string> &list, bool verifyFileExists  /* default: true, for historic reasons */) {
-	string data;
-	setOptionString(list, data, verifyFileExists);
-	return data;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Get an optional value as a string.
-///////////////////////////////////////////////////////////////////////////////
 bool ParseCommandLine::setOptionString( const vector<string> &list, string& defaultValue, const bool verifyFileExists /* default: false */) {
 
 	// Go through the possible flags that denote the option.
@@ -192,21 +183,6 @@ string ParseCommandLine::getParameter( const int number, const bool verifyFileEx
 bool ParseCommandLine::isError() {
 
 	return error;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Get whether the parser encountered the -h (--help) flag.
-///////////////////////////////////////////////////////////////////////////////
-bool ParseCommandLine::isHelp() {
-	return helpFlag;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Get whether the class doesn't need to handle usage.
-///////////////////////////////////////////////////////////////////////////////
-bool ParseCommandLine::isSpecializedUsage() {
-
-	return specializedUsageSet;
 }
 
 // returns true if the argument looks like a flag.
@@ -381,29 +357,6 @@ void ParseCommandLine::setErrorSpecialized( const string& errString ) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-// Set an optional value as a double.
-// Returns true if the option was found and was parseable, and false otherwise.
-///////////////////////////////////////////////////////////////////////////////
-bool ParseCommandLine::setOptionDouble(
-	const vector<string> &list, double& defaultValue ) {
-
-	// Go through the possible flags that denote the option.
-	// If one is found, attempt to convert it to a double and return that value.
-	if (error) return false;
-	for( int i = 1; i <= list.size(); i++ ) {
-		string option = toLower(list[i-1]);
-		if( parsedData.find( option ) != parsedData.end() ) {
-			// Try to read the given value as a double.
-			// If that can't be done, show an error.
-			if (parseVal(parsedData[option], defaultValue) ) return true;
-			setErrorSpecialized(sfmt("Non-numeric input given for flag \"%s\". Expected a floating-point number, but found \"%s\".", option.c_str(), parsedData[option].c_str()));
-			break;
-		}
-	}
-	return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
 // Set an optional value as a float.
 // Returns true if the option was found and was parseable, and false otherwise.
 ///////////////////////////////////////////////////////////////////////////////
@@ -445,36 +398,6 @@ bool ParseCommandLine::setOptionInteger(
 		}
 	}
 	return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Set an optional value as a long integer.
-// Returns true if the option was found and was parseable, and false otherwise.
-///////////////////////////////////////////////////////////////////////////////
-bool ParseCommandLine::setOptionLong(
-	const vector<string> &list, long& defaultValue ) {
-	if (error) return false;
-	// Go through the possible flags that denote the option.
-	// If one is found, attempt to convert it to an int and return that value.
-	for( int i = 1; i <= list.size(); i++ ) {
-		string option = toLower(list[i-1]);
-		if( parsedData.find( option ) != parsedData.end() ) {
-			// Try to read the given value as an int.
-			// If that can't be done, show an error.
-			if (parseVal(parsedData[option], defaultValue) ) return true;
-			setErrorSpecialized(sfmt("Non-numeric input given for flag \"%s\". Expected an integer, but found \"%s\".", option.c_str(), parsedData[option].c_str()));
-			break;
-		}
-	}
-	return false;
-}
-
-///////////////////////////////////////////////////////////////////////////////
-// Tell the class that it doesn't need to handle usage.
-///////////////////////////////////////////////////////////////////////////////
-void ParseCommandLine::setSpecializedUsage() {
-
-	specializedUsage = true;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -535,15 +458,6 @@ void ParseCommandLine::usage() {
 			printDescription( it1->second );
 		}
 	}
-}
-
-void replaceAll(std::string& str, const std::string& find, const std::string& replaceWith) {
-    if(find.empty()) return;
-    size_t pos = 0;
-    while((pos=str.find(find, pos)) != std::string::npos) {
-        str.replace(pos, find.length(), replaceWith);
-        pos += replaceWith.length();
-    }
 }
 
 void addLines(vector<string> &lines, string line, const int maxlen) {

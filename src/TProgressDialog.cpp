@@ -93,23 +93,3 @@ bool PartialProgress::canceled() const { return client==NULL?ProgressHandler::ca
 
 void PartialProgress::cancel() { if (client==NULL) ProgressHandler::cancel(); else client->cancel(); } //just forward to client
 
-void PartialProgress::setClient(ProgressHandler* newClient)  { client = newClient; } // set a new client
-
-void PartialProgress::setWorkComplete(const int percentWorkCompleted) { 
-    workComplete=percentWorkCompleted;
-    if (client!=NULL) client->update(percentWorkCompleted); // update the display showing the current amount of work complete.
-}
-
-void PartialProgress::setNextStep(const int percentWorkInNextStep) { 
-  workInNextStep=percentWorkInNextStep;
-}
-
-void PartialProgress::stepComplete() {
-  setWorkComplete(workComplete+workInNextStep); // add the work that was specified in the previous step. (or 0 if this is the first step).
-  workInNextStep=0;
-}
-
-void PartialProgress::advanceToNextStep(const int percentWorkInNextStep) { 
-  stepComplete(); // add the work that was specified in the previous step and update the display.
-  setNextStep(percentWorkInNextStep);
-}

@@ -120,20 +120,6 @@ class ParseCommandLine {
 	bool contains( const vector<string> &list );
 
 	/*
-	 * Name:        getOptionString
-	 * Description: Get a particular option as a string.
-	 * Arguments:
-	 *     1. list
-	 *        The list of option flags to check.
-	 *     2. exists
-	 *        True if the string is a file name that should exist, false if not.
-	 *        Default is true.
-	 * Returns:
-	 *     The option set by these flags, as a string.
-	 */
-	string getOptionString( const vector<string> &list, const bool verifyFileExists = true);
-
-	/*
 	 * Name:        setOptionString
 	 * Description: Get a particular option as a string.
 	 * Arguments:
@@ -166,22 +152,6 @@ class ParseCommandLine {
 	 *     True if the parser encountered an error, false if not.
 	 */
 	bool isError();
-
-	/*
-	* Name:        isHelp
-	* Description: Determine if the parser encountered the help flag (-h or --help).
-	* Useful for distinguishing this state from other errors 
-	* (because the presence of the help flag sets the error state to true).
-	*/
-	bool isHelp();
-
-	/**
-	 * Name:        getSpecializedUsage
-	 * Description: Get whether the class doesn't handle its own usage messages.
-	 * Returns:
-	 *     True if the class doesn't handle its own messages, false if it does.
-	 */
-	bool isSpecializedUsage();
 
 	/*
 	 * Name:        parseLine
@@ -222,19 +192,6 @@ class ParseCommandLine {
 	void setErrorSpecialized( const string &errString );
 
 	/*
-	 * Name:        setOptionDouble
-	 * Description: Set a particular option as a double.
-	 * Arguments:
-	 *     1. list
-	 *        The list of option flags to check.
-	 *     2. defaultValue
-	 *        The default value this option has.
-	 * Returns:
-	 *		True if the option was found and was parseable, and false otherwise.
-	 */
-	bool setOptionDouble( const vector<string> &list, double& defaultValue );
-
-	/*
 	 * Name:        setOptionFloat
 	 * Description: Set a particular option as a float.
 	 * Arguments:
@@ -259,26 +216,6 @@ class ParseCommandLine {
 	 *		True if the option was found and was parseable, and false otherwise.
 	 */
 	bool setOptionInteger( const vector<string> &list, int& defaultValue );
-
-	/*
-	 * Name:        setOptionLong
-	 * Description: Set a particular option as a long integer.
-	 * Arguments:
-	 *     1. list
-	 *        The list of option flags to check.
-	 *     2. defaultValue
-	 *        The default value this option has.
-	 * Returns:
-	 *		True if the option was found and was parseable, and false otherwise.
-	 */
-	bool setOptionLong( const vector<string> &list, long& defaultValue );
-
-	/**
-	 * Name:        setSpecializedUsage
-	 * Description: Sets a flag in the ParseCommandLine class that says an
-	 *              external class, not this one, will handle usage messages.
-	 */
-	void setSpecializedUsage();
 
 	/**
 	 * Name:        printDescription

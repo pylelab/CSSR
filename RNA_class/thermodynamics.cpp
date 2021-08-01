@@ -43,37 +43,6 @@ inline bool equal_within_tolerance(double temp1, double temp2) {
 	return abs(temp1-temp2)<TOLERANCE;
 }
 
-//Set the folding temperature:
-//Return an error code pertaining to reading the thermodynamic parameters:
-int Thermodynamics::SetTemperature(double temperature) {
-	// If the thermodynamic parameter files were already read at some point, re-read them from disk.
-	// (Skip reading if the temperature is the same as the already-loaded values)
-	// Note that if the data tables have not yet been loaded, we do NOT need to load them, because
-	// ReadThermodynamic will be called by the client code later. In constrast, if the client has already
-	// called ReadThermodynamic, we SHOULD re-read the data-tables because the client will expect that 
-	// SetTemperature modifies the existing tables.
-	if (GetEnergyRead()&&!equal_within_tolerance(data->GetLoadedTemperature(),temperature))
-		return ReloadDataTables(temperature); // reload the data (from the original directory and using the original alphabetName)
-	else
-		// Either (A) The data tables have not yet been loaded. or 
-		//        (B) The temperature of the data tables is already the same as the specified temperature.
-		// In either case just set the nominal folding temperature.
-		// If (A) then the nominal temperature will be applied the next time ReadThermodynamic is called.
-		nominal_temperature = temperature;
-	return 0;
-}
-
-//! Re-loads the free energy data tables from original
-//!  data directory and using the original alphabet name.
-//! If new_temperature is less than 0 it is ignored. Otherwise, the data tables will be read in and
-//! scaled to the specified temperature.
-int Thermodynamics::ReloadDataTables(const double new_temperature) {
-	if (data==NULL) return 30;
-	// make a copy of these datatable members because datatable may modify them in opendat.
-	string dir(data->data_directory), alphabet(data->alphabetName);
-	return ReadThermodynamic(dir.c_str(), alphabet.c_str(), new_temperature<0 ? data->temperature : new_temperature );
-}
-
 // deletes the thermodynamic data tables.
 void Thermodynamics::ClearEnergies() {
 	if (data!=NULL && !copied) delete data;
@@ -160,32 +129,6 @@ int Thermodynamics::ReadThermodynamic(const char *const directory, const char *a
 	}
 	if (error!=0) ClearEnergies(); // delete energy tables because they were not loaded correctly (or at the desired temperature).
 	return error;
-}
-
-
-// This function is used to provide an enthalpy table.
-datatable *Thermodynamics::GetEnthalpyTable(const char* alphabetName) {
-	//start by determining if the parameters need to be read or whether they have already been read:
-	if (enthalpy==NULL) {
-		string alpha=as_str(alphabetName);
-		
-		//allocate a table to storte enthalpy parameters
-		enthalpy = new datatable();
-
-		// If the user did not specify an alphabet, see if one is currently loaded (i.e. in alphabetName). If so, use that. Otherwise use isrna to decide whether to use the RNA or DNA alphabet.
-		if (alpha.empty())
-			alpha = GetAlphabetName(); // get the currently loaded alphabet name (if data is loaded) or nominal_alphabetName otherwise.
-		
-		// if alphabetName is still empty, set it to "rna" or "dna" (this would be the case if data is NOT currently loaded and nominal_alphabetName=NULL)
-		if (alpha.empty())
-			alpha=nominal_alphabetName=isrna?DT_RNA:DT_DNA; // use "rna" or "dna" depending on isrna
-
-		//open the enthlpy parameters and check for errors
-		if (enthalpy->opendat(data->data_directory.c_str(), alpha.c_str(), true)==0)
-			ClearEnthalpies(); //an error has occured. (enthalpy is set to NULL and returned).
-	}
-	// Either the parameters have been read or an error has occured in which case enthalpy is NULL. Return it either way.
-	return enthalpy;
 }
 
 

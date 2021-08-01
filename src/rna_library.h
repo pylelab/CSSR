@@ -228,10 +228,6 @@ struct datatable {
    
     int baseU;
    
-    //functions
-	//given a sequence (i.e. the numseq member of the structure class), check if two nucleotides
-	//are allowed to pair
-	bool can_pair(int i, int j, short* sequence);
     //convert base to a int number, based on read in alphabet vector from specification.dat file.
     int basetonum(char base);
 	//convert a number to a base
@@ -345,9 +341,6 @@ struct datatable {
         // Function gets the parameter usage counts from the specific hairpin loop energies (i.e. triloop)        
         std::vector<double> get_data_xloop_counts(char* ifname, intVector2D &matrix);
         
-        // Function gets usage counts for the loop initiation tables
-        std::vector<double> get_data_loop_counts(char* ifname, std::vector<COUNT_CLASS(short int) > &inter,
-                std::vector<COUNT_CLASS(short int) > &bulge, std::vector<COUNT_CLASS(short int) > &hairpin);
         
         // Function gets usage counts for the 1x1 internal looop table
         std::vector<double> get_6D_table_counts(char* ifname, shortVector6D &matrix);
@@ -358,65 +351,21 @@ struct datatable {
         // Function gets usage counts for the 2x2 internal loop table
         std::vector<double> get_8D_table_counts(char* ifname, shortVector8D &matrix);
         
-        // Function gets usage counts for the parameters found in miscloop
-        std::vector<double> get_miscloop_counts(char* ifname, COUNT_CLASS(float) &prelog, COUNT_CLASS(short int) &maxpen,
-                   COUNT_CLASS(short int) &efn2a, COUNT_CLASS(short int) &efn2b, COUNT_CLASS(short int) &efn2c, 
-                   COUNT_CLASS(short int) &strain, COUNT_CLASS(short int) &auend, COUNT_CLASS(short int) &gubonus, 
-                   COUNT_CLASS(short int) &cslope, COUNT_CLASS(short int) &cint, COUNT_CLASS(short int) &c3, COUNT_CLASS(short int) &init,
-                   COUNT_CLASS(short int) &singlecbulge, std::vector<COUNT_CLASS(short int) > &poppen,
-                   std::vector<COUNT_CLASS(short int) > &eparam);
         
-        // Writes the count vector to a file on the disk.  Might not be needed (RNA::WriteDataCounters no longer call export_data_counts)
-        bool write_count_vector(ofstream &ofile, std::vector<double> counts);
-
         // Function clears the parameter usage counts from a 4D data table, such as stack or coax.
         void clear_4D_usage_data(shortVector4D &matrix);
-
-        // Function clears the parameter usage counts from a loop initiation data table.
-        void clear_loop_usage_data(std::vector<COUNT_CLASS(short int) > &matrix);
 
         // Function clears the parameter usage counts from a specific hairpin loop table.
         void clear_xloop_usage_data(intVector2D &matrix);
 
-        // Reads in the covariance matrix from DATAPATH
-        bool read_cov(char* ifname, std::vector<std::vector<double> > &cov);
-
-        // Imports the parameter map from DATAPATH
-        bool read_param_map(char* ifname, std::vector<std::vector<double> > &param_map);
-
     public:
-        // Writes the usage counts to a file on the disk.  Might not be needed (RNA::WriteDataCounters no longer calls it)
-        bool export_data_counts(string CountFile);
 
-        // Returns a vector with all the parameter usage counts
-        std::vector<double> get_data_counts();
-
-        // Resets all of the parameter usage counts
-        void clear_parameter_usage_data();
-
-        // Calculates the experimental uncertainty from the current parameter usage counts
-        double calculate_uncertainty();
 #endif //COUNTING        
 };
 
 #define ERR_BAD_RESTRAINT_NUC_POS 2004  // corresponds to RNA::GetErrorMessage for "Invalid Nucleotide Number in Restraint file"
 #define ERR_BAD_RESTRAINT_FILE 2002 // corresponds to RNA::GetErrorMessage for "Could not open or read Restraint file"
 #define DEFAULT_RESTRAINT_VALUE -999.0 // default restraint value for nucleotides that are not listed explicitly in a restraints file (e.g. SHAPE)
-
-//! ReadRestraints reads a SHAPE/DMS file
-//!
-//! /param valuesRead is a vector of doubles that is filled with the restraint data. 
-//!                   This vector is 0-indexed, i.e. the value for base 1 is stored at valuesRead[0].
-//!                   The vector be empty or have its size set before the call (if the number of nucleotides are known).
-//! /return Returns ERR_BAD_RESTRAINT_NUC_POS if a bad position is listed in the file or ERR_BAD_RESTRAINT_FILE if the file cannot be read. Otherwise returns 0 on success.
-int ReadRestraints(vector<double> &valuesRead, const char* SHAPEFile);
-// Write restraints (e.g. SHAPE, DMS etc) to a file
-//! /param values is a vector of doubles that is filled with the restraint data. 
-//!               This vector must be 0-indexed, i.e. the value for base 1 is stored at values[0].
-//! /param outfile A string specifying the path to the output file.
-//! /param append Whether to append data to a file if it exists (the default is to truncate existing files before writing).
-//! /return Returns ERR_BAD_RESTRAINT_FILE if the file cannot be opened for writing. Otherwise returns 0 on success.
-int WriteRestraints(const vector<double> &values, const string& outfile, const bool append = false);
 
 //write is used to write data to a save file
 #ifdef COUNTING
