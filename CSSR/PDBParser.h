@@ -58,7 +58,7 @@ string write_pdb_structure(ModelUnit &pep);
 void write_pdb_structure(const char *filename,ModelUnit &pep);
 void reindex_pdb(const int startindex,ChainUnit& chain);
 void reindex_pdb(const int startindex,ModelUnit& pep);
-inline char aa3to1(const string resn,const int convertX);
+char aa3to1(const string resn,const int convertX);
 string pdb2fasta(ChainUnit& chain);
 string pdb2fasta(ModelUnit& pep,const string PDBid,const int ShowSeqLen);
 void remove_sidechain(ResidueUnit& residue,int atomic_detail);

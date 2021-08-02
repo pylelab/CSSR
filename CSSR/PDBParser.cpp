@@ -277,7 +277,7 @@ void reindex_pdb(const int startindex,ModelUnit& pep)
  *                all to legal amino acid in BLOSUM
  *            3 - non-standard amino acid with known parent
  */
-inline char aa3to1(const string resn,const int convertX=2)
+char aa3to1(const string resn,const int convertX=2)
 {
     // 20 standard amino acid + MSE
     if (resn[0]==' ' && (resn[1]=='D'||resn[1]==' ')) return tolower(resn[2]);
