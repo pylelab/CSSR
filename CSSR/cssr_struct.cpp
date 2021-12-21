@@ -536,7 +536,7 @@ inline bool bp_nn_score(const bool previnextj, const bool nextiprevj,
 }
 
 void cssr(const ModelUnit &pdb_entry, vector<string>&res_str_vec,
-    vector<pair<float,vector<string> > >&bp_vec, 
+    vector<pair<float,vector<string> > >&bp_vec, const int fastOpt,
     vector<pair<float,pair<int,int> > >&RR_list, const bool interchain)
 {
     /* pre-trained parameters */
@@ -553,6 +553,14 @@ void cssr(const ModelUnit &pdb_entry, vector<string>&res_str_vec,
                     ( 9-1)*(weight_tor>0)+
                     (10-1)*(weight_ang>0);
     float weight_cssr=0.8; // weight for cssr relative to ProbablePair. [0,1]
+    if (fastOpt==1)
+    {
+#ifdef lpv
+        weight_cssr=0.7;
+#else
+        weight_cssr=0.8;
+#endif
+    }
     if (RR_list.size()==0) weight_cssr=1; // only cssr if ProbablePair is absent
     float weight_cssr_final=weight_cssr;
     float adjust4=1-weight_cssr;  // adjust weight_cssr based on number of tests

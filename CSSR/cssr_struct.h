@@ -60,6 +60,6 @@ inline bool bp_nn_score(const bool previnextj, const bool nextiprevj,
     const float mu, const float sd, const float tol, const float weight,
     float &nominator, float &denominator);
 void cssr(const ModelUnit &pdb_entry, vector<string>&res_str_vec,
-    vector<pair<float,vector<string> > >&bp_vec, 
+    vector<pair<float,vector<string> > >&bp_vec, const int fastOpt, 
     vector<pair<float,pair<int,int> > >&RR_list, const bool interchain);
 #endif

@@ -1,6 +1,7 @@
 #include "CSSR.h"
 #include "PDBParser.h"
 #include "cssr_struct.h"
+#include "../src/LinearPartition.h"
 
 ///////////////////////////////////////////////////////////////////////////////
 // Constructor.
@@ -14,7 +15,7 @@ CSSR::CSSR() {
 	isRNA = true;
 
     isSequence = true; // dummy variable
-    fastOpt    = 1;
+    fastOpt    = 2;
 
 	// default output format is DSSR
     show_dot   = false;
@@ -58,7 +59,7 @@ bool CSSR::parse( int argc, char** argv ) {
 	vector<string> fastOptions;
 	fastOptions.push_back( "-f" );
 	fastOptions.push_back( "--fast" );
-	parser->addOptionFlagsWithParameters( fastOptions, "Specify fast level: 0 - (slow) use thermodynamics parameters; 1 - (default) do not use thermodyanmics parameters." );
+	parser->addOptionFlagsWithParameters( fastOptions, "Specify fast level: 0 - (slow) thermodynamics with quadratic folding; 1 - thermodynamics with linear folding; 2 - (default) do not use thermodyanmics parameters." );
 
 	// Add the outfmt option.
 	vector<string> outfmtOptions;
@@ -172,11 +173,12 @@ void CSSR::run() {
 	    delete strand;
 	    if (error) cerr << calcType << " complete with errors." << endl; 
     }
+    else if (fastOpt==1) LinearPartition_main(sequence,RR_list); 
     
     // assign SS solely by structure
     vector<string> res_str_vec;
     vector<pair<float,vector<string> > > bp_vec;
-    cssr(pdb_entry, res_str_vec, bp_vec, RR_list, interchain);
+    cssr(pdb_entry, res_str_vec, bp_vec, fastOpt, RR_list, interchain);
     size_t bp;
     vector<size_t> filtered_bp_vec;
     if (show_dot || show_dssr || show_bpseq)
