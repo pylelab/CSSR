@@ -10,6 +10,9 @@
 #include <stdlib.h> 
 #include <numeric>
 #include <unistd.h>
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+#include <windows.h>
+#endif
 using namespace std;
 
 #define DEBUG_OPENDAT 0
@@ -1953,6 +1956,25 @@ const char* getDataPath(const char* const alphabetName) {
     if (is_blank(getenv(DATAPATH_ENV_VAR)))
     {
         char buf[buf_length]; for (i=0;i<buf_length;i++) buf[i]=0;
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32) && !defined(__CYGWIN__)
+        char ownPth[MAX_PATH]; 
+        // When NULL is passed to GetModuleHandle, the handle of the exe itself is returned
+        HMODULE hModule = GetModuleHandle(NULL);
+        if (hModule != NULL)
+        {
+            // Use GetModuleFileName() with module handle to get the path
+            GetModuleFileName(hModule, buf, (sizeof(buf))); 
+            int i;
+            for(i=strlen(buf); i>=0; i--)
+            {
+                if(buf[i]=='\\' || buf[i]=='/') break;
+                buf[i]=0;
+            }
+            buf[i]=0;
+            if (strlen(buf)==0) buf[0]='.';
+            sprintf(env_tmp, "%s\\..\\data_tables", buf);
+        }
+#else
         int count=readlink("/proc/self/exe", buf, buf_length);
         if(count>0 && count<buf_length) // may not work, esp on non-linux system
         {
@@ -1971,6 +1993,7 @@ const char* getDataPath(const char* const alphabetName) {
             buf[i]=0;
             sprintf(env_tmp, "%s/data_tables", buf);
         }
+#endif
     }
     // Test whether the DATAPATH environment variable is set.
 	const char* const env = strlen(env_tmp)? env_tmp: getenv(DATAPATH_ENV_VAR);
