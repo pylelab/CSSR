@@ -4,7 +4,7 @@ CC=g++
 #CC=x86_64-w64-mingw32-g++
 OBJ=src/ParseCommandLine.o src/common_utils.o RNA_class/RNA.o RNA_class/thermodynamics.o src/DynProgArray.o src/extended_double.o src/forceclass.o src/pfunction.o src/rna_library.o src/structure.o src/TProgressDialog.o src/LinearPartition.o
 OBJ2=CSSR/cssr_struct.o CSSR/PDBParser.o 
-LDFLAGS=-lstdc++ -static
+LDFLAGS=-lstdc++ #-static
 
 exe/CSSR: ${OBJ} CSSR/CSSR.o ${OBJ2}
 	${CC} -o exe/CSSR ${CXXFLAGS} CSSR/CSSR.o ${OBJ} ${OBJ2} ${LDFLAGS}
