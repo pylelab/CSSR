@@ -4,11 +4,11 @@ assignment of canonical secondary structure to both full-atomic and
 coarse-grained 3D structures of RNAs.
 
 ## Installation ##
-We provide pre-compiled binaries for 64bit Linux and 64bit Windows
-at ``exe/CSSR-Linux64`` and ``exe/CSSR-Win64.exe``, respectively.
-No compilation is needed.
+We provide pre-compiled binaries for 64bit Linux, 64bit MacOS and 64bit
+Windows at ``exe/CSSR-Linux64``, ``exe/CSSR-Mac64`` and
+``exe/CSSR-Win64.exe``, respectively. No compilation is needed.
 
-For operating systems other than Linux or Windows, you can compile
+For operating systems other than those mentioned above, you can compile
 the program by:
 ```bash
 make exe/CSSR
