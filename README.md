@@ -31,7 +31,7 @@ it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 2 of the License, or
 (at your option) any later version.
 
-See src/README.md dependencies on other libraries.
+See ``src/README.md`` for dependencies on other libraries.
 
 ## Reference ##
 Chengxin Zhang, Anna Marie Pyle (2022)
