@@ -36,4 +36,4 @@ See ``src/README.md`` for dependencies on other libraries.
 ## Reference ##
 Chengxin Zhang, Anna Marie Pyle (2022)
 "CSSR: assignment of secondary structure to coarse-grained RNA tertiary structures."
-Acta Crystallogr D. In press.
+Acta Crystallogr D. 78, 466-471.
